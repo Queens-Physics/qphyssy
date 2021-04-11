@@ -68,7 +68,7 @@ def __scientific_printer(value: float, error: float, latex=False) -> str:
         return "inf {} inf".format(pm)
 
     # Find order of magnitude
-    order = m.floor(m.log10(value))
+    order = m.floor(m.log10(abs(value)))
     if order == 0:
         return __default_printer(value, error, latex)
 
@@ -125,10 +125,10 @@ def __round_values_to_sig_figs(value: float, error: float) -> (float, float):
 
     # First find the back-off value for rounding
     if sig_fig_mode in [SigFigMode.AUTOMATIC, SigFigMode.ERROR]:
-        order_of_error = m.floor(m.log10(error))
+        order_of_error = m.floor(m.log10(abs(error)))
         back_off = 10 ** (order_of_error - sig_fig_value + 1)
     else:
-        order_of_value = m.floor(m.log10(value))
+        order_of_value = m.floor(m.log10(abs(value)))
         back_off = 10 ** (order_of_value - sig_fig_value + 1)
 
     # Then round the value and error to the same digit
@@ -165,9 +165,9 @@ def __find_number_of_decimals(value: float, error: float) -> int:
 
     # Check if the current number of significant figures satisfy the settings
     if sig_fig_mode in [SigFigMode.AUTOMATIC, SigFigMode.ERROR]:
-        order = m.floor(m.log10(error)) if is_valid(error) else m.floor(m.log10(value))
+        order = m.floor(m.log10(abs(error))) if is_valid(error) else m.floor(m.log10(abs(value)))
     else:
-        order = m.floor(m.log10(value)) if is_valid(value) else m.floor(m.log10(error))
+        order = m.floor(m.log10(abs(value))) if is_valid(value) else m.floor(m.log10(abs(error)))
 
     number_of_decimals = - order + sig_fig_value - 1
     return number_of_decimals if number_of_decimals > 0 else 0
